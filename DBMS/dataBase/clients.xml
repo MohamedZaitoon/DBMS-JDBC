@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<clients>
+	<row>
+		<Salary dataType="int" />
+		<address dataType="String" />
+		<name dataType="String" />
+		<id dataType="int" />
+	</row>
+</clients>

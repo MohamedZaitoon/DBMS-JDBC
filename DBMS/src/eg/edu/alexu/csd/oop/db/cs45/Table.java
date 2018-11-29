@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -11,6 +12,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -31,12 +33,21 @@ public class Table {
 			Document document = documentBuilder.newDocument();
 
 			// root element
-			Element root = document.createElement("table");
+			Element root = document.createElement(map.get("table"));
 			document.appendChild(root);
-
-			/*
-			 * rest of code...
-			 */
+			map.remove("table");
+			Element row = document.createElement("row");
+			
+			//colomns 
+			for (Map.Entry<String, String> entry : map.entrySet())
+			{
+				Element col = document.createElement(entry.getKey());
+				Attr attr = document.createAttribute("dataType");
+				attr.setValue(entry.getValue());
+				col.setAttributeNode(attr);
+				row.appendChild(col);
+			}
+			root.appendChild(row);
 			
 			//transfer document to an xml file.
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
