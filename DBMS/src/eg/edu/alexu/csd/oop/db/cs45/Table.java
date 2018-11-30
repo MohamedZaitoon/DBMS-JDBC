@@ -6,7 +6,12 @@ import javafx.scene.shape.CullFace;
 
 public class Table {
 	private ArrayList<ArrayList<Object>> table;
+	private String name;
 
+	public String getName() {
+		return name;
+	}
+	
 	public Table(ArrayList<ArrayList<Object>> table) {
 		this.table = table;
 	}
