@@ -4,21 +4,18 @@ import java.util.ArrayList;
 
 public class Table {
 
+	public Table() {}
+
+	private ArrayList<ArrayList<Object>> table;
 	private String name;
 
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	private ArrayList<ArrayList<Object>> table =
-			new ArrayList<ArrayList<Object>>();
-
-	public Table() {}
-
+	
 	public Table(ArrayList<ArrayList<Object>> table) {
 		this.table = table;
 	}
