@@ -2,10 +2,22 @@ package eg.edu.alexu.csd.oop.db.cs45;
 
 import java.util.ArrayList;
 
-import javafx.scene.shape.CullFace;
-
 public class Table {
-	private ArrayList<ArrayList<Object>> table;
+
+	private String name;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	private ArrayList<ArrayList<Object>> table =
+			new ArrayList<ArrayList<Object>>();
+
+	public Table() {}
 
 	public Table(ArrayList<ArrayList<Object>> table) {
 		this.table = table;
@@ -26,7 +38,7 @@ public class Table {
 		ArrayList<Object> newRaw = new ArrayList<Object>();
 		int indexOfColumnToCompare = table.get(0).indexOf(columnToCompare);
 		for (ArrayList<Object> raw : table) {
-			if ( condition== null || raw.get(indexOfColumnToCompare)
+			if ( condition == null || raw.get(indexOfColumnToCompare)
 					== condition) {
 				for (int i = 0; i < columns.length; i++) {
 					newRaw.add(raw.get(table.get(0).indexOf(columns[i])));

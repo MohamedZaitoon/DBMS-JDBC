@@ -1,63 +1,72 @@
 package eg.edu.alexu.csd.oop.db.xml;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import eg.edu.alexu.csd.oop.db.cs45.Table;
 
 public class XMLParser {
 
-	private final String path;
-	private HashMap<String, String> map;
-
-	public XMLParser(String path, HashMap<String, String> nameAndCol) {
-		this.map = nameAndCol;
+	private String path;
+	public void setPath(String path) {
 		this.path = path;
-		create();
 	}
 
-	private void create() {
-		try {
-			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
-			Document document = documentBuilder.newDocument();
+	public XMLParser(String path) {
+		this.path = path;
+	}
 
-			// root element
-			Element root = document.createElement(map.get("table"));
-			document.appendChild(root);
-			map.remove("table");
-			Element row = document.createElement("row");
-			
-			//colomns 
-			for (Map.Entry<String, String> entry : map.entrySet())
-			{
-				Element col = document.createElement(entry.getKey());
-				Attr attr = document.createAttribute("dataType");
-				attr.setValue(entry.getValue());
-				col.setAttributeNode(attr);
-				row.appendChild(col);
+	public Table getTable() {
+		Table table = new Table();
+		ArrayList<ArrayList<Object>> tableAsArrayList = new ArrayList<
+				ArrayList<Object>>(); 
+		ArrayList<Object> tableRow = new ArrayList<Object>();
+		File input = new File(path);
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		try {
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document doc = db.parse(input);
+			doc.getDocumentElement().normalize();
+			table.setName(doc.getDocumentElement().getNodeName());
+			NodeList rows = doc.getElementsByTagName("row");
+			NodeList row = rows.item(0).getChildNodes();
+			for (int j = 0; j < row.getLength(); j++) {
+				Node col = row.item(j);
+				tableRow.add(col.getNodeName());
 			}
-			root.appendChild(row);
-			
-			//transfer document to an xml file.
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource domSource = new DOMSource(document);
-			StreamResult streamResult = new StreamResult(new File(path));
-			transformer.transform(domSource, streamResult);
-			
-		} catch (Exception e) {
+			tableAsArrayList.add(0, tableRow);
+			tableRow = new ArrayList<Object>();	
+			for (int i = 0; i < rows.getLength(); i++) {
+					row = rows.item(i).getChildNodes();
+					for (int j = 0; j < row.getLength(); j++) {
+						Node col = row.item(j);
+						tableRow.add(col.getTextContent());
+					}
+					tableAsArrayList.add(i, tableRow);
+					tableRow = new ArrayList<Object>();	
+			}
+			table.setTable(tableAsArrayList);
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		return table;
 	}
+
+	
 }
