@@ -29,14 +29,14 @@ public class Table {
 	}
 
 	public Table select(String[] columns, String 
-			condition, String columnToCompare) {
+			condition, String columnToCompare, String operator) {
 		ArrayList<ArrayList<Object>> resultTable = new ArrayList<
 				ArrayList<Object>>();
 		ArrayList<Object> newRaw = new ArrayList<Object>();
 		int indexOfColumnToCompare = table.get(0).indexOf(columnToCompare);
 		for (ArrayList<Object> raw : table) {
-			if ( condition == null || raw.get(indexOfColumnToCompare)
-					== condition) {
+			if ( condition == null || validateCondition(operator,
+					condition, raw.get(indexOfColumnToCompare))) {
 				for (int i = 0; i < columns.length; i++) {
 					newRaw.add(raw.get(table.get(0).indexOf(columns[i])));
 				}
@@ -68,11 +68,11 @@ public class Table {
 	}
 
 	public void update(ArrayList<String> columns, ArrayList<Object> values,
-			Object condition, String columnToCompare) {
+			Object condition, String columnToCompare, String operator) {
 		int indexOfColumnToCompare = table.get(0).indexOf(columnToCompare);
 		for (ArrayList<Object> raw : table) {
-			if (condition == null || raw.get(indexOfColumnToCompare)
-					== condition) {
+			if (condition == null || validateCondition(operator,
+					condition, raw.get(indexOfColumnToCompare))) {
 				for(Object column : table.get(0)) {
 					if (columns.contains(column))
 						raw.set(table.get(0).indexOf(column), values.get(
@@ -82,14 +82,30 @@ public class Table {
 		}
 	}
 
-	public void delete(Object condition, String columnToCompare) {
+	public void delete(Object condition, String columnToCompare, String operator) {
 		int indexOfColumnToCompare = table.get(0).indexOf(columnToCompare);
 		for (ArrayList<Object> raw : table) {
-			if (condition == null || raw.get(indexOfColumnToCompare)
-					== condition)
+			if (condition == null || validateCondition(operator,
+					condition, raw.get(indexOfColumnToCompare)))
 				table.remove(raw);
 		}
 	}
 
+	private boolean validateCondition(String operator, Object condition, Object target) {
+		switch (operator) {
+		case "=":
+			return (target == condition);
+		case "<":
+			return ((int)target < (int)condition);
+		case ">":
+			return ((int)target > (int)condition);
+		case "<=":
+			return ((int)target <= (int)condition);
+		case ">=":
+			return ((int)target >= (int)condition);
+		default:
+			return false;
+		}
+	}
 	
 }

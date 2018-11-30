@@ -1,5 +1,8 @@
 package eg.edu.alexu.csd.oop.db.xml;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,15 +24,15 @@ public class SaveAsXml {
 	public SaveAsXml(String path, Table table) {
 		this.table = table;
 		this.path = path;
-		create();
+		createXML();
+		createDTD();
 	}
 
-	private void create() {
+	private void createXML() {
 		try {
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
 			Document document = documentBuilder.newDocument();
-			
 			//convert table to an array
 			ArrayList<ArrayList<Object>> getTable = table.getTable();
 			Object[][] rows = new Object[getTable.size()][getTable.get(0).size()];
@@ -66,4 +69,32 @@ public class SaveAsXml {
 			e.printStackTrace();
 		}
 	}
+
+	private void createDTD() {
+		 BufferedWriter output = null;
+	        try {
+	            File file = new File("dataBase\\example.dtd");
+	            output = new BufferedWriter(new FileWriter(file));
+	            String[] elements = table.getTable().get(0).toArray(
+	            		new String[table.getTable().get(0).size()]);
+	            String text = "<!ELEMENT " + table.getName() + " (row)*>";
+	            output.write(text);
+	            output.newLine();
+	            text = "<!ELEMENT row (";
+	            for (int i = 0; i< elements.length - 1; i++) {
+	            	text += elements[i] + ",";
+	            }
+	            text += elements[elements.length - 1] + ")>";
+	            output.write(text);
+	            for (int i = 0; i < elements.length; i++) {
+	            	 text = "<!ELEMENT " + elements[i] + " (#PCDATA)>";
+	            	 output.newLine();
+	            	 output.write(text);     	 
+	            }
+	            output.close();
+	        } catch ( IOException e ) {
+	            e.printStackTrace();
+	        }
+	}
+	
 }
