@@ -41,15 +41,6 @@ public class SaveAsXml {
 			//root element
 			Element root = document.createElement(table.getName());
 			//root children:
-			//first row in table,
-			Element firstRow = document.createElement("row");
-			for(int j = 0; j < rows[0].length; j++)
-			{
-				Element col = document.createElement((String) rows[0][j]);
-				firstRow.appendChild(col);
-			}
-
-			//rest of rows.
 			for(int i = 1; i < rows.length; i++)
 			{
 				Element row = document.createElement("row");
@@ -61,7 +52,7 @@ public class SaveAsXml {
 				}
 				root.appendChild(row);
 			}
-			
+			document.appendChild(root);
 			
 			
 			//transfer document to an xml file.

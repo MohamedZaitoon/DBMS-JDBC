@@ -11,6 +11,9 @@ public class Table {
 	public String getName() {
 		return name;
 	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 	public Table(ArrayList<ArrayList<Object>> table) {
 		this.table = table;
