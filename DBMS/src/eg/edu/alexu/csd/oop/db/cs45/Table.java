@@ -33,25 +33,27 @@ public class Table {
 		this.table = table;
 	}
 
-	public Table select(String[] columns, String 
+	public Object[][] select(String[] columns, Object 
 			condition, String columnToCompare, String operator) {
 		if(!valid(columns))
 			return null;
-		ArrayList<ArrayList<Object>> resultTable = new ArrayList<
-				ArrayList<Object>>();
-		ArrayList<Object> newRaw = new ArrayList<Object>();
-		int indexOfColumnToCompare = table.get(0).indexOf(columnToCompare);
-		for (ArrayList<Object> raw : table) {
+		Object[][] resultOfSelection = new Object[table.size() - 1][columns.length];
+		int indexOfColumnToCompare = table.get(0).indexOf(columnToCompare), size = 0;
+		for (int j = 1; j < table.size(); j++) {
+			ArrayList<Object> raw = table.get(j);
 			if ( condition == null || validateCondition(operator,
 					condition, raw.get(indexOfColumnToCompare))) {
 				for (int i = 0; i < columns.length; i++) {
-					newRaw.add(raw.get(table.get(0).indexOf(columns[i])));
+					resultOfSelection[size][i] = (raw.get(table.get(0).indexOf(columns[i])));
 				}
-				resultTable.add(newRaw);
+				size++;
 			}
 		}
-		Table selectedTable = new Table(resultTable);
-		return selectedTable;
+		Object[][] resultOfSelection1 = new Object[size][columns.length];
+		for (int l = 0; l < size; l++) {
+			resultOfSelection1[l] = resultOfSelection[l];
+		}
+		return resultOfSelection1;
 	}
 
 	/*public ArrayList<Object> distinct (ArrayList<Object> culomnToBeFiltered) {
@@ -83,7 +85,8 @@ public class Table {
 		if(!valid(columns.toArray(new String[columns.size()])))
 			return;
 		int indexOfColumnToCompare = table.get(0).indexOf(columnToCompare);
-		for (ArrayList<Object> raw : table) {
+		for (int j = 1; j < table.size(); j++) {
+			ArrayList<Object> raw = table.get(j);
 			if (condition == null || validateCondition(operator,
 					condition, raw.get(indexOfColumnToCompare))) {
 				for(Object column : table.get(0)) {
@@ -97,7 +100,8 @@ public class Table {
 
 	public void delete(Object condition, String columnToCompare, String operator) {
 		int indexOfColumnToCompare = table.get(0).indexOf(columnToCompare);
-		for (ArrayList<Object> raw : table) {
+		for (int j = 1; j < table.size(); j++) {
+			ArrayList<Object> raw = table.get(j);
 			if (condition == null || validateCondition(operator,
 					condition, raw.get(indexOfColumnToCompare)))
 				table.remove(raw);
@@ -109,13 +113,13 @@ public class Table {
 		case "=":
 			return (target == condition);
 		case "<":
-			return ((int)target < (int)condition);
+			return ((Integer.parseInt((String)target)) < (Integer.parseInt((String)condition)));
 		case ">":
-			return ((int)target > (int)condition);
+			return ((Integer.parseInt((String)target)) > (Integer.parseInt((String)condition)));
 		case "<=":
-			return ((int)target <= (int)condition);
+			return ((Integer.parseInt((String)target)) <= (Integer.parseInt((String)condition)));
 		case ">=":
-			return ((int)target >= (int)condition);
+			return ((Integer.parseInt((String)target)) >= (Integer.parseInt((String)condition)));
 		default:
 			return false;
 		}
