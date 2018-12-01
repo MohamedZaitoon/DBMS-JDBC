@@ -6,6 +6,7 @@ public class Table {
 
 	public Table() {}
 
+	
 	private ArrayList<ArrayList<Object>> table;
 	private String name;
 
