@@ -21,14 +21,19 @@ public class Test {
 		a3.add("Mostafa");
 		a3.add("Egypt");
 		a.add(a3);
-		Table t = new Table(a);
-		t.setName("table");
-		
+		Table t = new Table();
+		t.setName("again");
+		String[] types = {"int", "string", "string"};
+		t.insertColumn(a2.toArray(new String[a2.size()]), types);
+		t.insert(a2, a3);
 		SaveAsXml save = new SaveAsXml("dataBase\\", t);
-		XMLParser xp = new XMLParser("dataBase\\");
-		if (xp.domValidationWithDtd()) {
+		save.createXML();
+		//XMLParser xp = new XMLParser("dataBase\\");
+		/*
+		 * if (xp.domValidationWithDtd()) {
 			Table table = xp.getTable();
 		}
+		 */
 	}
 
 }

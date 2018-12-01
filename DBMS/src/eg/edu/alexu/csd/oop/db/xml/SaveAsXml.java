@@ -12,6 +12,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -27,11 +28,9 @@ public class SaveAsXml {
 	public SaveAsXml(String path, Table table) {
 		this.table = table;
 		this.path = path;
-		createXML();
-		createDTD();
 	}
 
-	private void createXML() {
+	public void createXML() {
 		try {
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
@@ -54,6 +53,9 @@ public class SaveAsXml {
 				{
 					Element col = document.createElement((String) rows[0][j]);
 					col.appendChild(document.createTextNode((String) rows[i][j]));
+					Attr attr = document.createAttribute("type");
+					attr.setValue(table.getDataTypes().get(j));
+					col.setAttributeNode(attr);
 					row.appendChild(col);
 				}
 				root.appendChild(row);
@@ -74,12 +76,13 @@ public class SaveAsXml {
 			transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, doctype.getSystemId());
 			DOMSource domSource = new DOMSource(document);
 			StreamResult streamResult = new StreamResult(
-					new File(path + table.getName() + ".dtd"));
+					new File(path + table.getName() + ".xml"));
 			transformer.transform(domSource, streamResult);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		createDTD();
 	}
 
 	private void createDTD() {
