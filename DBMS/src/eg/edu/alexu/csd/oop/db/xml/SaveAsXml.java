@@ -86,25 +86,39 @@ public class SaveAsXml {
 	}
 
 	private void createDTD() {
+		//<!ATTLIST element-name attribute-name attribute-type attribute-value>
 		 BufferedWriter output = null;
 	        try {
 	            File file = new File(path + table.getName() + ".dtd");
 	            output = new BufferedWriter(new FileWriter(file));
 	            String[] elements = table.getTable().get(0).toArray(
 	            		new String[table.getTable().get(0).size()]);
+	            ArrayList<String> dataTypes = table.getDataTypes();
+	            String[] attrTags = new String[dataTypes.size()];
+	            //elements
 	            String text = "<!ELEMENT " + table.getName() + " (row)*>";
 	            output.write(text);
 	            output.newLine();
 	            text = "<!ELEMENT row (";
-	            for (int i = 0; i< elements.length - 1; i++) {
-	            	text += elements[i] + ",";
+	            for (int i = 0; i< elements.length; i++) {
+	            	if(i == elements.length - 1)
+	            		text += elements[i];
+	            	else
+	            		text += elements[i] + ",";
+	            	attrTags[i] = "<!ATTLIST " + elements[i] + " type " + "CDATA  " + "\"" + dataTypes.get(i) + "\"" + ">"; 
 	            }
-	            text += elements[elements.length - 1] + ")>";
+	            text += ")>";
 	            output.write(text);
 	            for (int i = 0; i < elements.length; i++) {
 	            	 text = "<!ELEMENT " + elements[i] + " (#PCDATA)>";
 	            	 output.newLine();
 	            	 output.write(text);     	 
+	            }
+	            //attributes
+	            for(int i = 0; i < attrTags.length; i++)
+	            {
+	            	output.newLine();
+	            	output.write(attrTags[i]);
 	            }
 	            output.close();
 	        } catch ( IOException e ) {

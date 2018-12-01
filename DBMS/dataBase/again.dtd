@@ -3,3 +3,6 @@
 <!ELEMENT id (#PCDATA)>
 <!ELEMENT client (#PCDATA)>
 <!ELEMENT country (#PCDATA)>
+<!ATTLIST id type CDATA  "int">
+<!ATTLIST client type CDATA  "string">
+<!ATTLIST country type CDATA  "string">

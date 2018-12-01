@@ -28,12 +28,16 @@ public class Test {
 		t.insert(a2, a3);
 		SaveAsXml save = new SaveAsXml("dataBase\\", t);
 		save.createXML();
-		//XMLParser xp = new XMLParser("dataBase\\");
-		/*
-		 * if (xp.domValidationWithDtd()) {
+		XMLParser xp = new XMLParser("dataBase\\again.xml");
+		
+		if (xp.domValidationWithDtd()) {
 			Table table = xp.getTable();
+			for (ArrayList<Object> A : table.getTable()) {
+				for (Object element : A) {
+					System.out.println(element);
+				}
+			}
 		}
-		 */
 	}
 
 }

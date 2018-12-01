@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
@@ -44,9 +45,13 @@ public class XMLParser {
 			table.setName(doc.getDocumentElement().getNodeName());
 			NodeList rows = doc.getElementsByTagName("row");
 			NodeList row = rows.item(0).getChildNodes();
+			ArrayList<String> dataTypes = new ArrayList<>();
+			//get names of tags & get dataTypes
 			for (int j = 0; j < row.getLength(); j++) {
 				Node col = row.item(j);
 				tableRow.add(col.getNodeName());
+				dataTypes.add(col.getAttributes().getNamedItem("type").getNodeValue());
+				//.getChildNodes().item(0).getAttributes().getNamedItem("data").getNodeValue());
 			}
 			tableAsArrayList.add(0, tableRow);
 			tableRow = new ArrayList<Object>();	
@@ -60,6 +65,7 @@ public class XMLParser {
 					tableRow = new ArrayList<Object>();	
 			}
 			table.setTable(tableAsArrayList);
+			table.setDataTypes(dataTypes);
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
@@ -110,5 +116,4 @@ public class XMLParser {
 		      return false;
 		    }
 		  }
-	
 }
