@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE again PUBLIC "" "again.dtd">
+<again>
+<row>
+<id type="int">54</id>
+<client type="string">Mostafa</client>
+<country type="string">Egypt</country>
+</row>
+</again>

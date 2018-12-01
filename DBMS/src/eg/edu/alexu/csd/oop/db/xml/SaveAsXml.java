@@ -6,12 +6,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 
 import eg.edu.alexu.csd.oop.db.cs45.Table;
@@ -24,11 +28,9 @@ public class SaveAsXml {
 	public SaveAsXml(String path, Table table) {
 		this.table = table;
 		this.path = path;
-		createXML();
-		createDTD();
 	}
 
-	private void createXML() {
+	public void createXML() {
 		try {
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
@@ -51,6 +53,9 @@ public class SaveAsXml {
 				{
 					Element col = document.createElement((String) rows[0][j]);
 					col.appendChild(document.createTextNode((String) rows[i][j]));
+					Attr attr = document.createAttribute("type");
+					attr.setValue(table.getDataTypes().get(j));
+					col.setAttributeNode(attr);
 					row.appendChild(col);
 				}
 				root.appendChild(row);
@@ -61,19 +66,29 @@ public class SaveAsXml {
 			//transfer document to an xml file.
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+			transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+			DOMImplementation domImpl = document.getImplementation();
+			DocumentType doctype = domImpl.createDocumentType(table.getName(),
+			    "", table.getName() + ".dtd");
+			transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, doctype.getPublicId());
+			transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, doctype.getSystemId());
 			DOMSource domSource = new DOMSource(document);
-			StreamResult streamResult = new StreamResult(new File(path));
+			StreamResult streamResult = new StreamResult(
+					new File(path + table.getName() + ".xml"));
 			transformer.transform(domSource, streamResult);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		createDTD();
 	}
 
 	private void createDTD() {
 		 BufferedWriter output = null;
 	        try {
-	            File file = new File("dataBase\\example.dtd");
+	            File file = new File(path + table.getName() + ".dtd");
 	            output = new BufferedWriter(new FileWriter(file));
 	            String[] elements = table.getTable().get(0).toArray(
 	            		new String[table.getTable().get(0).size()]);

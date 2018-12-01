@@ -13,7 +13,7 @@ public class CreateDatabase implements Command {
 	/**
 	 * The validation pattern for the Create statement.
 	 */
-	private String validation = "\\s*create\\s+database\\s+([^\\s]+)\\s*";
+	private String validation = "\\s*create\\s+database\\s+(\\w+)\\s*(?!.)";
 	/**
 	 * Name of database that has been created.
 	 */
@@ -30,10 +30,10 @@ public class CreateDatabase implements Command {
 	@Override
 	public boolean execute(String query) throws SQLException {
 		if(isValid(query)) {
-			String temp = query.trim().split("\\s+")[2];
-			Matcher m = Pattern.compile("([^\\s;]+)").matcher(temp);
+			Pattern p = Pattern.compile(validation,Pattern.CASE_INSENSITIVE);
+			Matcher m = p.matcher(query);
 			m.find();
-			dbName = m.group(0);
+			dbName = m.group(1);
 			File db = new File(DBMS.getPath()+Utility.separator()+dbName);
 			return db.mkdirs();
 		}

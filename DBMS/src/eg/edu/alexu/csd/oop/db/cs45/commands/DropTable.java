@@ -13,17 +13,19 @@ public class DropTable implements Command {
 	/**
 	 * The validation pattern for the Drop Table statement.
 	 */
-	private String validation = "\\s*drop\\s+table\\s+([a-zA-Z_0-9]+)\\s*";
+	private String validation = "\\s*drop\\s+table\\s+(\\w+)\\s*(?!.)";
 
 
 	@Override
 	public boolean execute(String query) throws SQLException {
+		if(getDB() == null) {
+			throw new SQLException();
+		}
 		if (isValid(query)) {
-			String tableName;
-			String temp = query.trim().split("\\s+")[2];
-			Matcher m = Pattern.compile("([a-zA-Z_0-9]+)").matcher(temp);
+			Pattern p = Pattern.compile(validation, Pattern.CASE_INSENSITIVE);
+			Matcher m = p.matcher(query);
 			m.find();
-			tableName = m.group(0);
+			String tableName = m.group(1).trim();
 			return getDB().dropTable(tableName);
 		}
 		return false;

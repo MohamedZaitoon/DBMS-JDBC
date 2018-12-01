@@ -14,13 +14,12 @@ public class CreateTable implements Command {
 	/**
 	 * Pattern of word
 	 */
-	private final String WORDP = "[a-zA-Z_0-9]";
-	private final String COLUMN = "(("+WORDP+"+)\\s+("+WORDP+"+)\\s*,?\\s*)";
+	private final String COLUMN = "^\\s*(\\w+)\\s+(int|varchar)\\s*$";
 	
 	/**
 	 * The validation pattern for the Create Table statement.
 	 */
-	private String validation = "\\s*create\\s+table\\s+("+WORDP+"+)\\s*\\(\\s*("+COLUMN+"*)\\)\\s*";
+	private String validation = "\\s*create\\s+table\\s+(\\w+)\\s*\\({1}\\s*([\\s\\S]+)\\){1}\\s*(?!.)";
 	
 	@Override
 	public boolean execute(String query) throws SQLException {
@@ -32,19 +31,25 @@ public class CreateTable implements Command {
 			Pattern p = Pattern.compile(validation,Pattern.CASE_INSENSITIVE);
 			Matcher m = p.matcher(query);
 			m.find();
-			if(getDB().isTableExist(m.group(1))) {
-				return false;
+			dtd.put("table_name", m.group(1).trim());
+			String cols = m.group(2).trim();
+			if(cols.isEmpty() || cols.endsWith(",")) {
+				throw new SQLException();
 			}
-			dtd.put("table_name", m.group(1));
-			String cols = m.group(2);
-			m = Pattern.compile(COLUMN).matcher(cols);
-			while(m.find()) {
-				String colName = m.group(2);
-				if(dtd.get(colName) != null) {
+			String[] splitCol = cols.split(","); 
+			for(String info : splitCol) {
+				m = Pattern.compile(COLUMN).matcher(info);
+				if(m.find()) {
+					String colName = m.group(1);
+					if(dtd.get(colName) != null) {
+						throw new SQLException();
+					}
+					dtd.put(colName, m.group(2));
+				}else {
 					throw new SQLException();
 				}
-				dtd.put(colName, m.group(3));
 			}
+			
 			return getDB().createTable(dtd);
 		}
 		return false;

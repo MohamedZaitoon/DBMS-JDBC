@@ -6,36 +6,41 @@ import java.util.regex.Pattern;
 
 public class Delete extends UpdateQuery {
 
-	private String validation ="\\s*delete\\s+from\\s+(.*(?!where))"
-			+ "(\\s+where\\s+(\\w+)\\s*([<>=])\\s*('([^']*)'|(\\d+))\\s*)?";
+	private String validation = "\\s*delete\\s+from\\s+(\\w+)(?:([\\s\\S]+))?";
+	private String validCondition = "^\\s*where\\s+([\\w]+)\\s*(<=|>=|[=><])\\s*([\\s\\S]+)";
+	private String validValue = "^('[\\s\\S]+'|\\d+)$";
+
 	@Override
 	public boolean execute(String query) throws SQLException {
-		if(getDB() == null) {
+		if (getDB() == null) {
 			throw new SQLException();
 		}
-		if(isValid(query)) {
-			String tableName;
+		if (isValid(query)) {
 			Pattern p = Pattern.compile(validation, Pattern.CASE_INSENSITIVE);
 			Matcher m = p.matcher(query);
 			m.find();
-			tableName = m.group(1);
-			if(!getDB().isTableExist(tableName)) {
-				return false;
-			}
-			if(m.group(2) == null) {
-				System.out.println("done");
-			}else {
-				String columnName = m.group(3);
-				String operation = m.group(4);
-				String value = m.group(5);
-				if(value.contains("'")) {
-					value = value.replaceAll("'", "");
+			String tableName = m.group(1);
+			String condition =  m.group(2);
+			String operand = null, operator = null, value = null;
+			if (condition != null) {
+				m = Pattern.compile(validCondition).matcher(condition);
+				if (!m.find()) {
+					throw new SQLException();
 				}
-				
+				operand = m.group(1).trim();
+				operator = m.group(2).trim();
+				m = Pattern.compile(validValue).matcher(m.group(3));
+				if (!m.find()) {
+					throw new SQLException();
+				}
+				value = m.group(1).trim();
+				value = value.contains("'")?value.replaceAll("'", ""):value;
 			}
-			return true;
-		}
-		return false;
+			this.updatedRows = getDB().deleteRow(tableName, operand, operator, value);
+			return true; 
+			}
+			return false;
+
 	}
 
 	@Override

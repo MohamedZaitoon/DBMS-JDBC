@@ -52,8 +52,7 @@ public class DBMS implements Database {
 	@Override
 	public String createDatabase(String databaseName, boolean dropIfExists) {
 		File serverDir = new File(PATH);
-		if (!serverDir.exists()) {
-			serverDir.mkdir();
+		if (serverDir.mkdir()) {
 			try {
 				executeStructureQuery("CREATE DATABASE " + databaseName );
 			} catch (SQLException e) {
@@ -110,7 +109,14 @@ public class DBMS implements Database {
 
 	@Override
 	public Object[][] executeQuery(String query) throws SQLException {
-		return null;
+		String key = getCommand(query, 0).toUpperCase();
+		Command cmd = commands.get(key);
+		if(cmd != null) {
+			cmd.execute(query);
+				return ((Select) cmd).getSelected();
+		}else {
+			throw new SQLException();
+		}
 	}
 
 	@Override

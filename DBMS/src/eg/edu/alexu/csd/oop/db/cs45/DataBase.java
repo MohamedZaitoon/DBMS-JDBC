@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import eg.edu.alexu.csd.oop.db.xml.SaveAsXml;
+
 public class DataBase {
 	/**
 	 * The current working table we work on.
@@ -35,48 +37,42 @@ public class DataBase {
 	 */
 	public void setelectTable(String tableName) {
 	}
-	public boolean createTable(Map<String, String> dtd) {
-		File f = new File(path+DBMS.getSeparator()+dtd.get("table_name")+".xml");
-		try {
-			
-			return f.createNewFile() && 
-					new File(path+DBMS.getSeparator()+dtd.get("table_name")+".dtd").createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
+	public boolean createTable(Map<String, String> dtd)  {
+		String tableName = dtd.get("table_name");
+		File fxml = new File(path+DBMS.getSeparator()+tableName+".xml");
+		File fdtd = new File(path+DBMS.getSeparator()+tableName+".dtd");
+		if(fxml.exists()&&fdtd.exists()) {
+			return false;
 		}
-		return false;
-	}
-	public boolean isTableExist(String tableName) {
-		File[] tables = new File(path).listFiles();
-		for(File f : tables) {
-			if(f.isFile() && f.getName().matches(tableName+".[Xx][Mm][Ll]"));{
-				return true;
-			}
-		}
-		return false;
+		Table table = new Table();
+		table.setName(tableName);
+		SaveAsXml save = new SaveAsXml(path+DBMS.getSeparator(), table);
 		
+		return  false;
 	}
 	public boolean dropTable(String tableName) {
-		File[] tables = new File(path).listFiles();
-		int n = 0;
-		for(File f : tables) {
-			if(f.isFile() && f.getName().matches(tableName+".[Xx][Mm][Ll]")){
-				f.delete();
-				n++;
-			}else if(f.isFile() && f.getName().matches(tableName+".[Dd][Tt][Dd]")) {
-				f.delete();
-				n++;
-			}
-			if(n == 2) {
+		File fxml = new File(path+DBMS.getSeparator()+tableName+".xml");
+		File fdtd = new File(path+DBMS.getSeparator()+tableName+".dtd");
+		if(fxml.exists() && fdtd.exists()) {
+				fxml.delete();
+				fdtd.delete();
 				return true;
-			}
 		}
 		return false;
 	}
 	public int update(String tableName, Map<String, String> updatedColumns, Map<String, String> condation) {
-		System.out.println(tableName);
-		System.out.println(updatedColumns.toString());
-		System.out.println(condation.toString());
+
+		return 0;
+	}
+	public Object[][] selectRow(String tableName, String[] splitColoumns, String operand, String operator, String value) {
+		
+		return null;
+	}
+	
+	public int insert(String tableName, String[] splitColumns, String[] splitValues) {
+		return 0;
+	}
+	public int deleteRow(String tableName, String operand, String operator, String value) {
 		return 0;
 	}
 	

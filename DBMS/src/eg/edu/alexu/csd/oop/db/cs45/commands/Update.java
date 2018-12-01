@@ -72,7 +72,7 @@ public class Update extends UpdateQuery {
 			condation.put("value", value);
 		}
 		updatedRows = getDB().update(tableName, updatedColumns, condation);
-		return updatedRows != 0;
+		return true;
 	}
 
 	@Override
