@@ -1,6 +1,7 @@
 package eg.edu.alexu.csd.oop.db;
 
 public interface Database {
+	
 	/**
 	 * Create database with the given name, or use it if exists. This method
 	 * performs a call to executeStructureQuery() internally to create or drop

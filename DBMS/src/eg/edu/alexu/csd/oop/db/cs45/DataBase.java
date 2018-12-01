@@ -73,6 +73,12 @@ public class DataBase {
 		}
 		return false;
 	}
+	public int update(String tableName, Map<String, String> updatedColumns, Map<String, String> condation) {
+		System.out.println(tableName);
+		System.out.println(updatedColumns.toString());
+		System.out.println(condation.toString());
+		return 0;
+	}
 	
 	
 }

@@ -7,7 +7,15 @@ import java.util.Map;
 
 import eg.edu.alexu.csd.oop.db.Command;
 import eg.edu.alexu.csd.oop.db.Database;
-import eg.edu.alexu.csd.oop.db.cs45.commands.*;
+import eg.edu.alexu.csd.oop.db.cs45.commands.CreateDatabase;
+import eg.edu.alexu.csd.oop.db.cs45.commands.CreateTable;
+import eg.edu.alexu.csd.oop.db.cs45.commands.Delete;
+import eg.edu.alexu.csd.oop.db.cs45.commands.DropDatabase;
+import eg.edu.alexu.csd.oop.db.cs45.commands.DropTable;
+import eg.edu.alexu.csd.oop.db.cs45.commands.Insert;
+import eg.edu.alexu.csd.oop.db.cs45.commands.Select;
+import eg.edu.alexu.csd.oop.db.cs45.commands.Update;
+import eg.edu.alexu.csd.oop.db.cs45.commands.UpdateQuery;
 
 public class DBMS implements Database {
 	
@@ -87,6 +95,8 @@ public class DBMS implements Database {
 					}
 				}
 				return true;
+			}else if(cmd instanceof CreateDatabase) {
+				database = new DataBase(((CreateDatabase) cmd).getDbName());
 			}
 		}else {
 			throw new SQLException();
@@ -105,6 +115,13 @@ public class DBMS implements Database {
 
 	@Override
 	public int executeUpdateQuery(String query) throws SQLException {
+		String key = getCommand(query, 0).toUpperCase();
+		Command cmd = commands.get(key);
+		if(cmd != null) {
+			if(cmd.execute(query)) {
+				return ((UpdateQuery)cmd).getUpdatedRows();
+			}
+		}
 		return 0;
 	}
 
