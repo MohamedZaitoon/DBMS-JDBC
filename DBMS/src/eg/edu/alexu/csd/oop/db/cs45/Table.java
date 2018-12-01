@@ -107,5 +107,10 @@ public class Table {
 			return false;
 		}
 	}
+	public void insertColumn(String[] columns) {
+		for (int i = 0; i < columns.length; i++) {
+			table.get(0).add(columns[i]);
+		}
+	}
 	
 }

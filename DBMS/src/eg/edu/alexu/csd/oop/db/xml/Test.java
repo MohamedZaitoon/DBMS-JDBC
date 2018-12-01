@@ -22,10 +22,10 @@ public class Test {
 		a3.add("Egypt");
 		a.add(a3);
 		Table t = new Table(a);
-		t.setName("example");
+		t.setName("table");
 		
-		SaveAsXml save = new SaveAsXml("dataBase\\example4.xml", t);
-		XMLParser xp = new XMLParser("dataBase\\example4.xml");
+		SaveAsXml save = new SaveAsXml("dataBase\\", t);
+		XMLParser xp = new XMLParser("dataBase\\");
 		if (xp.domValidationWithDtd()) {
 			Table table = xp.getTable();
 		}
