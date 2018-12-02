@@ -1,0 +1,8 @@
+<!ELEMENT table_name10 (row)*>
+<!ELEMENT row (column_name1,column_name2,column_name3)>
+<!ELEMENT column_name1 (#PCDATA)>
+<!ELEMENT column_name2 (#PCDATA)>
+<!ELEMENT column_name3 (#PCDATA)>
+<!ATTLIST column_name1 type CDATA  "varchar">
+<!ATTLIST column_name2 type CDATA  "int">
+<!ATTLIST column_name3 type CDATA  "varchar">

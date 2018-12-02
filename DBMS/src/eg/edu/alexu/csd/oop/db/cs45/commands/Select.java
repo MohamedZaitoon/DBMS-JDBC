@@ -45,13 +45,13 @@ public class Select implements Command{
 			}
 			String operand = null, operator = null, value = null;
 			if (condition != null) {
-				m = Pattern.compile(validCondition).matcher(condition);
+				m = Pattern.compile(validCondition, Pattern.CASE_INSENSITIVE).matcher(condition);
 				if (!m.find()) {
 					throw new SQLException();
 				}
 				operand = m.group(1).trim();
 				operator = m.group(2).trim();
-				m = Pattern.compile(validValue).matcher(m.group(3));
+				m = Pattern.compile(validValue, Pattern.CASE_INSENSITIVE).matcher(m.group(3));
 				if (!m.find()) {
 					throw new SQLException();
 				}

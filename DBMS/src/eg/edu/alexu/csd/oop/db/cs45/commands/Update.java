@@ -1,6 +1,7 @@
 package eg.edu.alexu.csd.oop.db.cs45.commands;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -8,23 +9,28 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Update extends UpdateQuery {
-
-	private String basicPattern = "\\s*update\\s+(\\w+)\\s+set\\s+(.*)\\s+(where\\s+(.*)\\s*)?";
+	 
+	private String basicPattern = "\\s*update\\s+(\\w+)\\s+set\\s+([\\s\\S]+)\\s+where\\s+([\\s\\S]+)";
+	private String validation2  = "\\s*update\\s+(\\w+)\\s+set\\s+([\\s\\S]+)\\s*";
 	@Override
 	public boolean execute(String query) throws SQLException {
 		if (getDB() == null) {
 			throw new SQLException();
 		}
-
+		String condations = " ";
 		Pattern p = Pattern.compile(basicPattern, Pattern.CASE_INSENSITIVE);
 		Matcher m = p.matcher(query);
 		if (!m.find()) {
-			throw new SQLException();
+			m = Pattern.compile(validation2, Pattern.CASE_INSENSITIVE).matcher(query);
+			if(!m.find()) {
+				throw new SQLException();
+			}
+			condations = null;
 		}
 
 		String tableName = m.group(1);
 		String updateCols ="set "+ m.group(2).trim();
-		String condations = m.group(4);
+		condations =condations == null ?null: m.group(3);
 		
 		if (updateCols == null || updateCols.isEmpty() ||updateCols.endsWith(",")) {
 			throw new SQLException();
@@ -40,24 +46,25 @@ public class Update extends UpdateQuery {
 		int countCols = new StringTokenizer(" " + updateCols + " ", ",").countTokens() - 1;
 		int checkCols = 0;
 		String getCol = "(?:(([\\w\\s]+)\\s*=\\s*('[^']*'|\\d+))\\s*,)";
-		m = Pattern.compile(getCol).matcher(updateCols);
-		Map<String, String> updatedColumns = new HashMap<>();
+		m = Pattern.compile(getCol,Pattern.CASE_INSENSITIVE).matcher(updateCols);
+		ArrayList<Object> updatedColumns = new ArrayList<>();
+		ArrayList<Object> updatedValues = new ArrayList<>();
 		while (m.find()) {
 			String col =m.group(2).trim();
 			String value = m.group(3);
 			if(col.contains(" ")) {
 				throw new SQLException();
 			}
-			value = value.matches("'") ? value.replaceAll("'", "") : value;
-			updatedColumns.put(col, value);
+			value = value.contains("'") ? value.replaceAll("'", "") : value;
+			updatedColumns.add(col);
+			updatedValues.add(value);
 			checkCols++;
 		}
 		if (checkCols != countCols) {
 			throw new SQLException();
 		}
-		Map<String, String> condation = new HashMap<>();
+		String operand = null, operator = null,value = null;
 		if (condations == null || condations.trim().isEmpty()) {
-			condation.put("condation", null);
 		} else {
 			condations = condations.endsWith(";") ? condations : condations + ";";
 			String condationPattern = "\\s*(?:(\\w+)\\s*([><=])\\s*('[^']*'|\\d+))\\s*;";
@@ -65,13 +72,12 @@ public class Update extends UpdateQuery {
 			if (!m.find()) {
 				throw new SQLException();
 			}
-			String value = m.group(3);
-			value = value.matches("'") ? value.replaceAll("'", "") : value;
-			condation.put("column", m.group(1));
-			condation.put("condation", m.group(2));
-			condation.put("value", value);
+			operand = m.group(1);
+			operator =  m.group(2);
+			value = m.group(3);
+			value = value.contains("'") ? value.replaceAll("'", "") : value;
 		}
-		updatedRows = getDB().update(tableName, updatedColumns, condation);
+		updatedRows = getDB().update(tableName,updatedColumns, updatedValues, value,operand,operator);
 		return true;
 	}
 

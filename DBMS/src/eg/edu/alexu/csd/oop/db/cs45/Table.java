@@ -1,5 +1,6 @@
 package eg.edu.alexu.csd.oop.db.cs45;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Table {
@@ -40,13 +41,16 @@ public class Table {
 		if(!valid(columns))
 			return null;
 		Object[][] resultOfSelection = new Object[table.size() - 1][columns.length];
-		int indexOfColumnToCompare = table.get(0).indexOf(columnToCompare), size = 0;
+		int size = 0;
 		for (int j = 1; j < table.size(); j++) {
 			ArrayList<Object> raw = table.get(j);
 			if ( condition == null || validateCondition(operator,
-					condition, raw.get(indexOfColumnToCompare))) {
+					condition, raw.get(getIndex(table.get(0), columnToCompare)))) {
 				for (int i = 0; i < columns.length; i++) {
-					resultOfSelection[size][i] = (raw.get(table.get(0).indexOf(columns[i])));
+					if (dataTypes.get(getIndex(table.get(0), columns[i])) == "int")
+						resultOfSelection[size][i] = Integer.parseInt((String) raw.get(getIndex(table.get(0), columns[i])));
+					else 
+						resultOfSelection[size][i] = (String)(raw.get(getIndex(table.get(0), columns[i])));
 				}
 				size++;
 			}
@@ -74,38 +78,40 @@ public class Table {
 			return;
 		ArrayList<Object> newRaw = new ArrayList<>();
 		for(Object element : table.get(0)) {
-			if (columns.contains(element))
-				newRaw.add(values.get(columns.indexOf(element)));
+			if (isContain(columns, (String) element))
+				newRaw.add(values.get(getIndex(columns, element)));
 			else
 				newRaw.add(null);
 		}
 		table.add(newRaw);
 	}
 
-	public void update(ArrayList<String> columns, ArrayList<Object> values,
-			Object condition, String columnToCompare, String operator) {
+	public int update(ArrayList<Object> columns, ArrayList<Object> values,
+			Object condition, String columnToCompare, String operator) throws SQLException {
 		if(!valid(columns.toArray(new String[columns.size()])))
-			return;
-		int indexOfColumnToCompare = table.get(0).indexOf(columnToCompare);
+			throw new SQLException();
+		int n = 0;
 		for (int j = 1; j < table.size(); j++) {
 			ArrayList<Object> raw = table.get(j);
 			if (condition == null || validateCondition(operator,
-					condition, raw.get(indexOfColumnToCompare))) {
+					condition, raw.get(getIndex(table.get(0), columnToCompare)))) {
+				n++;
 				for(Object column : table.get(0)) {
-					if (columns.contains(column))
-						raw.set(table.get(0).indexOf(column), values.get(
-								columns.indexOf(column)));
+					if (isContain(columns, ((String)column)))
+						raw.set(getIndex(table.get(0), column), values.get(
+								getIndex(columns, column)));
 				}
 			}
 		}
+		return n;
 	}
 
 	public void delete(Object condition, String columnToCompare, String operator) {
-		int indexOfColumnToCompare = table.get(0).indexOf(columnToCompare);
-		for (int j = 1; j < table.size(); j++) {
-			ArrayList<Object> raw = table.get(j);
+		int size = table.size();
+		for (int j = 1; j < size; j++) {
+			ArrayList<Object> raw = table.get(1);
 			if (condition == null || validateCondition(operator,
-					condition, raw.get(indexOfColumnToCompare)))
+					condition, raw.get(getIndex(table.get(0), columnToCompare))))
 				table.remove(raw);
 		}
 	}
@@ -113,7 +119,7 @@ public class Table {
 	private boolean validateCondition(String operator, Object condition, Object target) {
 		switch (operator) {
 		case "=":
-			return (target == condition);
+			return ((String)target).toLowerCase().trim().equals(((String)condition).toLowerCase().trim());
 		case "<":
 			return ((Integer.parseInt((String)target)) < (Integer.parseInt((String)condition)));
 		case ">":
@@ -140,7 +146,7 @@ public class Table {
 		ArrayList<Object> validCols = table.get(0);
 		for(int i = 0; i < cols.length; i++)
 		{
-			if(!(validCols.contains(cols[i])))
+			if(!(isContain(validCols,cols[i])))
 			{
 				System.out.println(cols[i] + " : is not a valid colomn.");
 				return false;
@@ -149,4 +155,24 @@ public class Table {
 		return true;
 	}
 	
+	private boolean isContain(ArrayList<Object> arr,String target) {
+		
+		for(Object o : arr) {
+			System.out.println(target.toLowerCase() +"  "+((String)o).toLowerCase());
+			if(target.toLowerCase().trim().equals((((String)o).toLowerCase().trim()))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private int getIndex(ArrayList<Object> columns, Object target) {
+		int i = 0;
+		for (i = 0; i < columns.size(); i++) {
+			if(((String) target).toLowerCase().trim().equals((((String)columns.get(i)).toLowerCase().trim()))) {
+				return i;
+			}
+		}
+		return i - 1;
+	}
 }

@@ -29,8 +29,11 @@ public class SaveAsXml {
 		this.table = table;
 		this.path = path;
 	}
-
-	public void createXML() {
+	public void save() {
+		createXML();
+		createDTD();
+	}
+	private void createXML() {
 		try {
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();

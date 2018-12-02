@@ -1,5 +1,0 @@
-<!ELEMENT example (row)*>
-<!ELEMENT row (id,client,country)>
-<!ELEMENT id (#PCDATA)>
-<!ELEMENT client (#PCDATA)>
-<!ELEMENT country (#PCDATA)>

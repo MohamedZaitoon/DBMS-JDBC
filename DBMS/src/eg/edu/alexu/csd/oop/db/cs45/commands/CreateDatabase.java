@@ -13,7 +13,7 @@ public class CreateDatabase implements Command {
 	/**
 	 * The validation pattern for the Create statement.
 	 */
-	private String validation = "\\s*create\\s+database\\s+(\\w+)\\s*(?!.)";
+	private String validation = "\\s*create\\s+database\\s+([\\s\\S]+)\\s*(?!.)";
 	/**
 	 * Name of database that has been created.
 	 */

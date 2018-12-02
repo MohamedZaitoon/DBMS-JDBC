@@ -28,7 +28,7 @@ public class DBMS implements Database {
 	 * the database that we working on it.
 	 */
 	
-	private static DataBase database;
+	public static DataBase database;
 	
 	public static String getSeparator() {
 		return separator;
@@ -96,7 +96,9 @@ public class DBMS implements Database {
 				return true;
 			}else if(cmd instanceof CreateDatabase) {
 				database = new DataBase(((CreateDatabase) cmd).getDbName());
+				return true;
 			}
+			
 		}else {
 			throw new SQLException();
 		}
@@ -153,5 +155,6 @@ public class DBMS implements Database {
 		}
 		return null;
 	}
+	
 
 }

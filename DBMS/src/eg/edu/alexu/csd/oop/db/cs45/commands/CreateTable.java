@@ -31,26 +31,32 @@ public class CreateTable implements Command {
 			Pattern p = Pattern.compile(validation,Pattern.CASE_INSENSITIVE);
 			Matcher m = p.matcher(query);
 			m.find();
-			dtd.put("table_name", m.group(1).trim());
+			String tableName = m.group(1).trim();
+			getDB().tableIsExist(tableName);
 			String cols = m.group(2).trim();
 			if(cols.isEmpty() || cols.endsWith(",")) {
 				throw new SQLException();
 			}
 			String[] splitCol = cols.split(","); 
+			String[] columns = new String[splitCol.length];
+			String[] dataTypes = new String[splitCol.length];
+			int i = 0;
 			for(String info : splitCol) {
 				m = Pattern.compile(COLUMN).matcher(info);
 				if(m.find()) {
-					String colName = m.group(1);
-					if(dtd.get(colName) != null) {
+					columns[i] = m.group(1).trim();
+					if(dtd.get(columns[i]) != null) {
 						throw new SQLException();
 					}
-					dtd.put(colName, m.group(2));
+					dataTypes[i] = m.group(2);
+					dtd.put(columns[i], dataTypes[i]);
+					i++;
 				}else {
 					throw new SQLException();
 				}
 			}
 			
-			return getDB().createTable(dtd);
+			return getDB().createTable(tableName,columns,dataTypes);
 		}
 		return false;
 	}

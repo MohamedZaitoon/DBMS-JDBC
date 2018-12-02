@@ -13,7 +13,7 @@ public class DropDatabase implements Command {
 	/**
 	 * The validation pattern for the Drop statement.
 	 */
-	private String validation = "\\s*drop\\s+database\\s+(\\w+)\\s*(?!.)";
+	private String validation = "\\s*drop\\s+database\\s+([\\s\\S]+)\\s*(?!.)";
 	/**
 	 * Name of database that has been dropped.
 	 */

@@ -40,8 +40,8 @@ public class Test {
 		columns2.add("country");
 		values = new ArrayList<Object>();
 		values.add("UK");
-		table.update(columns2, values, condition, columnToCompare, operator);
-		table.update(columns2, values, null, null, null);
+//		table.update(columns2, values, condition, columnToCompare, operator);
+//		table.update(columns2, values, null, null, null);
 		table.delete(condition, columnToCompare, operator);
 		table.delete(null, null, null);
 //		/*ArrayList<ArrayList<Object>> a = new ArrayList<>();
